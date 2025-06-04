@@ -21,7 +21,7 @@ class Config:
     LLM_MODEL = "gpt-3.5-turbo"  # Default model
     
     # Vector store settings
-    VECTOR_STORE_TYPE = "faiss"  # or "chroma"
+    VECTOR_STORE_TYPE = "chroma"  #orfaiss
     VECTOR_STORE_PATH = str(CACHE_DIR / "vector_store")
     
     # Chunking settings
