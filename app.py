@@ -6,21 +6,66 @@ from src.chain import ChatbotChain
 from src.utils import get_cache_key, load_from_cache, save_to_cache, clear_cache
 from config import config
 import os
+import json
 
-# Set page config
+# Set page config (should be the first Streamlit command)
 st.set_page_config(
     page_title="SPLAN AI Assistant",
     page_icon="🤖",
     layout="wide",
 )
 
-# Initialize session state
+# --- Load Data ---
+@st.cache_data
+def load_data():
+    json_file = config.DATA_DIR / "splanblogs.json"
+    try:
+        with open(json_file, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        st.error(f"JSON file not found at {json_file}")
+        st.stop()
+    except json.JSONDecodeError:
+        st.error("Invalid JSON format in the file")
+        st.stop()
+
+# Initialize session state (before any other Streamlit interactions)
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "vector_store_loaded" not in st.session_state:
     st.session_state.vector_store_loaded = False
 if "chatbot_initialized" not in st.session_state:
     st.session_state.chatbot_initialized = False
+
+# Load the data (after session state initialization)
+data = load_data()
+
+# Initialize the chatbot components
+@st.cache_resource(show_spinner=False)
+def initialize_chatbot(data_file_path: str):
+    with st.spinner("Initializing chatbot components..."):
+        # Step 1: Load and process documents
+        loader = DocumentLoader()
+        raw_docs = loader.load_json_documents(data_file_path)
+        processed_docs = loader.process_documents(raw_docs)
+        split_docs = loader.split_documents(processed_docs)
+        
+        # Step 2: Create or load vector store
+        vector_store_manager = VectorStoreManager()
+        vector_store = vector_store_manager.load_vector_store()
+        
+        if vector_store is None:
+            vector_store = vector_store_manager.create_vector_store(split_docs)
+            vector_store_manager.save_vector_store(vector_store)
+        
+        # Step 3: Create retriever and chain
+        retriever = CustomRetriever(vector_store)
+        chatbot = ChatbotChain(retriever)
+        
+        st.session_state.vector_store_loaded = True
+        st.session_state.chatbot_initialized = True
+        
+        return chatbot
 
 # Sidebar for configuration
 with st.sidebar:
@@ -62,35 +107,8 @@ with st.sidebar:
         st.success("Cache cleared successfully!")
         st.rerun()
 
-# Initialize the chatbot components
-@st.cache_resource(show_spinner=False)
-def initialize_chatbot(data_file_path: str):
-    with st.spinner("Initializing chatbot components..."):
-        # Step 1: Load and process documents
-        loader = DocumentLoader()
-        raw_docs = loader.load_json_documents(data_file_path)
-        processed_docs = loader.process_documents(raw_docs)
-        split_docs = loader.split_documents(processed_docs)
-        
-        # Step 2: Create or load vector store
-        vector_store_manager = VectorStoreManager()
-        vector_store = vector_store_manager.load_vector_store()
-        
-        if vector_store is None:
-            vector_store = vector_store_manager.create_vector_store(split_docs)
-            vector_store_manager.save_vector_store(vector_store)
-        
-        # Step 3: Create retriever and chain
-        retriever = CustomRetriever(vector_store)
-        chatbot = ChatbotChain(retriever)
-        
-        st.session_state.vector_store_loaded = True
-        st.session_state.chatbot_initialized = True
-        
-        return chatbot
-
 # Main chat interface
-st.title("SPLAN AI Assisstant")
+st.title("SPLAN AI Assistant")
 st.write("Ask me how can I help you about our products?")
 
 # Only initialize if not already done
