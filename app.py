@@ -18,7 +18,7 @@ st.set_page_config(
 # --- Load Data ---
 @st.cache_data
 def load_data():
-    json_file = Path(__file__).parent / "data" / "splanblogs.json"
+    json_file = config.DATA_DIR / "splanblogs.json"
     try:
         with open(json_file, 'r', encoding='utf-8') as f:
             return json.load(f)
