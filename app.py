@@ -9,7 +9,7 @@ import os
 
 # Set page config
 st.set_page_config(
-    page_title="RAG Chatbot",
+    page_title="SPLAN AI Assistant",
     page_icon="🤖",
     layout="wide",
 )
