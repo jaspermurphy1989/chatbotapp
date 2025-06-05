@@ -90,8 +90,8 @@ def initialize_chatbot(data_file_path: str):
         return chatbot
 
 # Main chat interface
-st.title("RAG Chatbot")
-st.write("Ask me anything based on the provided documents!")
+st.title("SPLAN AI Assisstant")
+st.write("Ask me how can I help you about our products?")
 
 # Only initialize if not already done
 if not st.session_state.chatbot_initialized:
