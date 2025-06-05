@@ -8,6 +8,13 @@ from config import config
 import os
 import json
 
+print("\n=== DEBUGGING FILE PATHS ===")
+print("Current directory:", os.getcwd())
+json_path = Path(__file__).parent / "data" / "splanblogs.json"
+print("Looking for JSON at:", json_path)
+print("File exists?", json_path.exists())
+print("=======================\n")
+
 # Set page config (should be the first Streamlit command)
 st.set_page_config(
     page_title="SPLAN AI Assistant",
