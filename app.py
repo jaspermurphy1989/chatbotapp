@@ -7,6 +7,7 @@ from src.utils import get_cache_key, load_from_cache, save_to_cache, clear_cache
 from config import config
 import os
 import json
+from pathlib import Path
 
 print("\n=== DEBUGGING FILE PATHS ===")
 print("Current directory:", os.getcwd())
