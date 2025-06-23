@@ -10,7 +10,7 @@ import json
 from pathlib import Path
 
 # Set DATA_DIR if not already correctly set
-config.DATA_DIR = Path(__file__).resolve().parent / "data"
+config.DATA_DIR = Path(__file__).resolve().parent / "src" /"data"
 
 print("\n=== DEBUGGING FILE PATHS ===")
 print("Current directory:", os.getcwd())
