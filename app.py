@@ -9,9 +9,12 @@ import os
 import json
 from pathlib import Path
 
+# Set DATA_DIR if not already correctly set
+config.DATA_DIR = Path(__file__).resolve().parent / "data"
+
 print("\n=== DEBUGGING FILE PATHS ===")
 print("Current directory:", os.getcwd())
-json_path = Path(__file__).resolve().parents[1]/ "data"/ "splanblogs.json"
+json_path = Path(__file__).resolve().parent / "data"/ "splanblogs.json"
 print("Looking for JSON at:", json_path)
 print("File exists?", json_path.exists())
 print("=======================\n")
